@@ -4,6 +4,8 @@ require 'liquid'
 require 'workshopper/loader'
 require 'workshopper/renderer'
 
+include Rails.application.routes.url_helpers
+
 module Workshopper
 
   class Lab
@@ -97,7 +99,11 @@ module Workshopper
 
       def render(context)
         ws = context.environments.first['WORKSHOP_NAME']
-        File.join("/workshop/#{ws}/asset/images", @path)
+        imagesdir = url_for(controller: 'welcome', action: 'asset',
+                            workshop: ws, path: 'images', ext: 'ext',
+                            only_path: true)
+        imagesdir.delete_suffix!('.ext')
+        File.join(imagesdir, @path)
       end
     end
 
