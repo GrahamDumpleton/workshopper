@@ -1,5 +1,6 @@
 require 'yaml'
 require 'digest/sha2'
+require 'uri'
 
 require 'workshopper/content'
 require 'workshopper/loader'
@@ -20,7 +21,11 @@ module Workshopper
     end
 
     def prefix
-      ENV['CONTENT_URL_PREFIX'] || @data['content']['url']
+      content_url = ENV['CONTENT_URL_PREFIX']
+      return content_url if content_url
+      content_url = @data['content']['url'] || ''
+      return content_url if !content_url.scan(URI.regexp).empty?
+      File.join(File.dirname(@url), content_url)
     end
 
     def id
